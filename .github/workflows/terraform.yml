@@ -1,0 +1,41 @@
+name: "Azure Terraform Deploy"
+
+on:
+  push:
+    branches:
+      - main  # Trigger to run whenever push to Main branch
+  pull_request:
+
+jobs:
+  terraform:
+    name: "Terraform Action"
+    runs-on: ubuntu-latest
+    
+    # Environment variables
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+    steps:
+      # 1. Pull the code from the repo onto the GitHub runner
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Install the Terraform CLI on the runner
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 3. Initialize the Backend (This connects to the Azure Storage Bucket)
+      - name: Terraform Init
+        run: terraform init
+
+      # 4. Create the Plan
+      - name: Terraform Plan
+        run: terraform plan -input=false
+
+      # 5. Apply the changes (Only runs on the 'main' branch)
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
