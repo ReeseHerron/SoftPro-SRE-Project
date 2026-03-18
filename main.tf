@@ -1,3 +1,8 @@
+variable "ssh_public_key" {
+  type        = string
+  description = "Public key for SSH access"
+}
+
 terraform {
   required_providers {
     azurerm = {
@@ -117,7 +122,7 @@ resource "azurerm_linux_virtual_machine" "web_server" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = var.ssh_public_key
   }
 
   os_disk {
