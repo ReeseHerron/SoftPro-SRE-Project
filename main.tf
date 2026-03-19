@@ -148,3 +148,58 @@ output "web_server_ip" {
   value       = azurerm_public_ip.web_ip.ip_address
   description = "The public IP address of the web server"
 }
+
+# Monitor Action Group
+resource "azurerm_monitor_action_group" "main" {
+  name                = "sre-alerts"
+  resource_group_name = azurerm_resource_group.main.name
+  short_name          = "SREAlerts"
+
+  email_receiver {
+    name                    = "send-to-reese"
+    email_address           = "reese.herron13@gmail.com"
+    use_common_alert_schema = true
+  }
+}
+
+# CPU Metric Alert
+resource "azurerm_monitor_metric_alert" "cpu_alert" {
+  name                = "webserver-cpu-alert"
+  resource_group_name = azurerm_resource_group.main.name
+  scopes              = [azurerm_linux_virtual_machine.web_server.id]
+  description         = "Action will be triggered when CPU exceeds 80%"
+  severity            = 3 # 3 is Informational/Warning
+
+  criteria {
+    metric_namespace = "Microsoft.Compute/virtual_machines"
+    metric_name      = "Percentage CPU"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = 80
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.main.id
+  }
+}
+
+# Availability Metric Alert
+resource "azurerm_monitor_metric_alert" "vm_availability" {
+  name                = "webserver-availability-alert"
+  resource_group_name = azurerm_resource_group.main.name
+  scopes              = [azurerm_linux_virtual_machine.web_server.id]
+  description         = "Alert if VM is down"
+  severity            = 1 # High Priority
+
+  criteria {
+    metric_namespace = "Microsoft.Compute/virtual_machines"
+    metric_name      = "VmAvailabilityMetric"
+    aggregation      = "Average"
+    operator         = "LessThan"
+    threshold        = 1
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.main.id
+  }
+}
