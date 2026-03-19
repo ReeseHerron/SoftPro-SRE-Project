@@ -171,7 +171,7 @@ resource "azurerm_monitor_metric_alert" "cpu_alert" {
   severity            = 3 # 3 is Informational/Warning
 
   criteria {
-    metric_namespace = "Microsoft.Compute/virtual_machines"
+    metric_namespace = "Microsoft.Compute/virtualMachines"
     metric_name      = "Percentage CPU"
     aggregation      = "Average"
     operator         = "GreaterThan"
@@ -192,7 +192,7 @@ resource "azurerm_monitor_metric_alert" "vm_availability" {
   severity            = 1 # High Priority
 
   criteria {
-    metric_namespace = "Microsoft.Compute/virtual_machines"
+    metric_namespace = "Microsoft.Compute/virtualMachines"
     metric_name      = "VmAvailabilityMetric"
     aggregation      = "Average"
     operator         = "LessThan"
