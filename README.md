@@ -1,4 +1,6 @@
 **Azure SRE Infrastructure Pipeline**
+
+
 Project Overview:
 This project demonstrates a production-ready Site Reliability Engineering (SRE) workflow using Terraform and GitHub Actions. It automates the deployment of a hardened Linux web server (Nginx) on Azure, featuring a fully modular architecture, remote state management, and proactive monitoring.
 
@@ -39,6 +41,8 @@ terraform plan
 terraform apply
 ```
 **Lessons Learned** (The SRE Perspective)
+
+
 State Reconciliation (Conflict 409 / Not Found 404):
 Encountered synchronization issues between the Azure Portal and the local Terraform state. I resolved these by utilizing terraform import to bring existing resources under management without triggering destructive recreation. This reinforced the importance of the State File as the single source of truth for Infrastructure as Code (IaC).
 
